@@ -1,0 +1,18 @@
+[package]
+name = "sx128x"
+version = "0.0.1"
+authors = ["Vitaly Domnikov <oss@vitaly.codes>"]
+edition = "2018"
+documentation = "https://docs.rs/sx128x"
+repository = "https://github.com/dotcypress/sx128x"
+license = "MIT/Apache-2.0"
+description = "Rust driver for the SX128x Long Range, Low Power, 2.4GHz Transceiver"
+readme = "README.md"
+
+[dependencies]
+bitflags = { version = "2.6.0" }
+defmt = { version = "0.3.2", optional = true }
+embedded-hal = "1.0.0"
+
+[features]
+defmt = ["dep:defmt"]
