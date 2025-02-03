@@ -574,6 +574,23 @@ where
         }
     }
 
+    /// Get frequency error indicator level
+    pub fn get_fei(&mut self) -> Result<f32, Error<SPI>> {
+        #[cfg(feature = "defmt")]
+        defmt::trace!("get_fei()");
+        let mut scratch = [0; 4];
+        self.read_register(Register::LoraEstimatedFrequencyError, &mut scratch[..3])?;
+        let aligned = (u32::from_be_bytes(scratch) << 4).to_be_bytes();
+        let raw_result = i32::from_be_bytes(aligned) >> 8;
+        match self.modem {
+            Some(Modem::Ranging(modem)) => {
+                let bw = modem.lora.modulation_params.bandwidth.mhz();
+                Ok(raw_result as f32 * 1.55 / (1.6 / bw))
+            }
+            _ => Err(Error::ConfigError),
+        }
+    }
+
     /// Freeze ranging result
     pub fn freeze_ranging_result(&mut self) -> Result<u32, Error<SPI>> {
         #[cfg(feature = "defmt")]
