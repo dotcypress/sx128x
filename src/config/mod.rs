@@ -60,6 +60,28 @@ pub struct Period {
     pub count: u16,
 }
 
+impl Period {
+    pub const fn from_ms(millis: u32) -> Self {
+        Self::from_us(millis * 1000)
+    }
+
+    pub const fn from_us(micros: u32) -> Self {
+        let (base, count) = if micros < 1_023_984 {
+            (0x00, micros * 1_000 / 15_625)
+        } else if micros < 4_095_937 {
+            (0x01, micros * 10 / 625)
+        } else if micros < 65_535_000 {
+            (0x02, micros)
+        } else {
+            (0x03, micros / 4)
+        };
+        Self {
+            base,
+            count: count as u16,
+        }
+    }
+}
+
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Frequency {
     raw: [u8; 3],
